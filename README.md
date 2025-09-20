@@ -2,7 +2,6 @@
 
 ![Badge](https://img.shields.io/badge/language-C%23-blue)
 ![Badge](https://img.shields.io/badge/database-PostgreSQL-blue)
-![Badge](https://img.shields.io/badge/status-Em%20Desenvolvimento-yellow)
 ![Badge](https://img.shields.io/badge/licen%C3%A7a-MIT-green)
 
 <p align="center">
@@ -74,7 +73,7 @@ Siga os passos abaixo para rodar o projeto em sua máquina local.
 
 1.  **Clone o repositório:**
     ```bash
-    git clone [https://github.com/kayo-benjamin/seu-repositorio.git](https://github.com/kayo-benjamin/seu-repositorio.git)
+    git clone [https://github.com/kayo-benjamin/fluxo-systems.git](https://github.com/kayo-benjamin/fluxo-systems.git)
     ```
 
 2.  **Abra o projeto:**
@@ -112,7 +111,7 @@ Siga os passos abaixo para rodar o projeto em sua máquina local.
 
 *Aqui você pode adicionar imagens da sua aplicação em funcionamento!*
 
-![Tela Principal do Fluxo](C:\Users\kayov\OneDrive\Imagens\Screenshots\Tela_Programa.png)
+![Tela Principal do Fluxo](./screenshots/tela-principal.png)
 
 ---
 
