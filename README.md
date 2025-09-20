@@ -107,14 +107,6 @@ Siga os passos abaixo para rodar o projeto em sua máquina local.
 
 ---
 
-## 🖼️ Screenshots
-
-*Aqui você pode adicionar imagens da sua aplicação em funcionamento!*
-
-![Tela Principal do Fluxo](./screenshots/tela-principal.png)
-
----
-
 ## 👨‍💻 Autor
 
 Feito com ❤️ por **[Kayo Benjamin]**.
