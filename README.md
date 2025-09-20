@@ -111,7 +111,7 @@ Siga os passos abaixo para rodar o projeto em sua máquina local.
 
 *Aqui você pode adicionar imagens da sua aplicação em funcionamento!*
 
-![Tela Principal do Fluxo]([./screenshots/tela-principal.png](https://github.com/kayo-benjamin/fluxo-systems/tree/main/Fluxo/screenshots))
+![Tela Principal do Fluxo](https://github.com/kayo-benjamin/fluxo-systems/tree/main/Fluxo/screenshots/tela-principal.png)
 
 ---
 
