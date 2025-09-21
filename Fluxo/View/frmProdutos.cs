@@ -52,13 +52,31 @@ namespace Fluxo.View
 
         private void btnSalvar_Click(object sender, EventArgs e)
         {
+            string precoTextoLimpo = txtPreco.Text.Replace("R$", "").Trim();
+            if (!decimal.TryParse(precoTextoLimpo, out decimal precoConvertido))
+            {
+                MessageBox.Show("O valor do campo 'Preço' é inválido. Por favor, digite apenas números.", "Erro de Validação", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!int.TryParse(txtQuantidade.Text, out int quantidadeConvertida))
+            {
+                MessageBox.Show("O valor do campo 'Quantidade' é inválido. Por favor, digite apenas números inteiros.", "Erro de Validação", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtNome.Text))
+            {
+                MessageBox.Show("O campo 'Nome' não pode estar vazio.", "Erro de Validação", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             try
             {
                 var produto = new Produto
                 {
                     Nome = txtNome.Text,
-                    Preco = decimal.Parse(txtPreco.Text),
-                    Quantidade = int.Parse(txtQuantidade.Text)
+                    Preco = precoConvertido,
+                    Quantidade = quantidadeConvertida
                 };
 
                 // Se o campo ID tiver algo, significa que estamos editando
