@@ -48,10 +48,10 @@ namespace Fluxo.Model
 
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("id_produto", produto.IdProduto);
                         cmd.Parameters.AddWithValue("nome", produto.Nome);
                         cmd.Parameters.AddWithValue("preco", produto.Preco);
                         cmd.Parameters.AddWithValue("quantidade", produto.Quantidade);
+                        cmd.Parameters.AddWithValue("idProduto", produto.IdProduto);
 
                         int linhasAfetadas = cmd.ExecuteNonQuery();
 
