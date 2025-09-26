@@ -1,10 +1,9 @@
-﻿using Fluxo.Interface;
+using Fluxo.Interface;
+using Fluxo.Utils;
 using Npgsql;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
 
 namespace Fluxo.Model
 {
@@ -12,109 +11,158 @@ namespace Fluxo.Model
     {
         public void InserirProduto(Produto produto)
         {
-            string query = "INSERT INTO produto (nome, preco, quantidade) VALUES (@nome, @preco, @quantidade)";
+            const string query = "INSERT INTO produto (nome, preco, quantidade) VALUES (@nome, @preco, @quantidade)";
+            
+            Logger.LogInfo($"Iniciando inserção do produto: {produto.Nome}");
 
             try
             {
                 using (var conn = new NpgsqlConnection(AppSettings.ConnectionString))
                 {
                     conn.Open();
+                    Logger.LogInfo("Conexão com banco de dados estabelecida");
 
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("nome", produto.Nome);
-                        cmd.Parameters.AddWithValue("preco", produto.Preco);
-                        cmd.Parameters.AddWithValue("quantidade", produto.Quantidade);
+                        cmd.Parameters.Add(new NpgsqlParameter("nome", NpgsqlTypes.NpgsqlDbType.Varchar) { Value = produto.Nome });
+                        cmd.Parameters.Add(new NpgsqlParameter("preco", NpgsqlTypes.NpgsqlDbType.Numeric) { Value = produto.Preco });
+                        cmd.Parameters.Add(new NpgsqlParameter("quantidade", NpgsqlTypes.NpgsqlDbType.Integer) { Value = produto.Quantidade });
 
-                        cmd.ExecuteNonQuery();
+                        int linhasAfetadas = cmd.ExecuteNonQuery();
+                        
+                        if (linhasAfetadas > 0)
+                        {
+                            Logger.LogInfo($"Produto '{produto.Nome}' inserido com sucesso");
+                        }
+                        else
+                        {
+                            Logger.LogWarning("Nenhuma linha foi afetada durante a inserção");
+                        }
                     }
-                    Console.WriteLine("Produto inserido com sucesso.");
                 }
             }
             catch (NpgsqlException ex)
             {
-                Console.WriteLine($"Erro ao inserir produto: {ex.Message}");
-                throw;
+                Logger.LogError($"Erro de banco de dados ao inserir produto '{produto.Nome}'", ex);
+                throw new ApplicationException($"Erro ao inserir produto: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Erro inesperado ao inserir produto '{produto.Nome}'", ex);
+                throw new ApplicationException($"Erro inesperado: {ex.Message}", ex);
             }
         }
+
         public void AtualizarProduto(Produto produto)
         {
-            string query = "UPDATE produto SET nome = @nome, preco = @preco, quantidade = @quantidade WHERE id_produto = @idProduto";
+            const string query = "UPDATE produto SET nome = @nome, preco = @preco, quantidade = @quantidade WHERE id_produto = @idProduto";
+            
+            Logger.LogInfo($"Iniciando atualização do produto ID: {produto.IdProduto}");
+
             try
             {
                 using (var conn = new NpgsqlConnection(AppSettings.ConnectionString))
                 {
                     conn.Open();
+                    Logger.LogInfo("Conexão com banco de dados estabelecida");
 
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("nome", produto.Nome);
-                        cmd.Parameters.AddWithValue("preco", produto.Preco);
-                        cmd.Parameters.AddWithValue("quantidade", produto.Quantidade);
-                        cmd.Parameters.AddWithValue("idProduto", produto.IdProduto);
+                        cmd.Parameters.Add(new NpgsqlParameter("nome", NpgsqlTypes.NpgsqlDbType.Varchar) { Value = produto.Nome });
+                        cmd.Parameters.Add(new NpgsqlParameter("preco", NpgsqlTypes.NpgsqlDbType.Numeric) { Value = produto.Preco });
+                        cmd.Parameters.Add(new NpgsqlParameter("quantidade", NpgsqlTypes.NpgsqlDbType.Integer) { Value = produto.Quantidade });
+                        cmd.Parameters.Add(new NpgsqlParameter("idProduto", NpgsqlTypes.NpgsqlDbType.Integer) { Value = produto.IdProduto });
 
                         int linhasAfetadas = cmd.ExecuteNonQuery();
 
                         if (linhasAfetadas > 0)
                         {
-                            Console.WriteLine("Produto atualizado com sucesso.");
+                            Logger.LogInfo($"Produto ID {produto.IdProduto} atualizado com sucesso");
                         }
                         else
                         {
-                            Console.WriteLine("Produto não encontrado.");
+                            Logger.LogWarning($"Produto com ID {produto.IdProduto} não foi encontrado para atualização");
+                            throw new InvalidOperationException($"Produto com ID {produto.IdProduto} não encontrado");
                         }
                     }
                 }
             }
             catch (NpgsqlException ex)
             {
-                Console.WriteLine($"Erro ao atualizar produto: {ex.Message}");
-                throw;
+                Logger.LogError($"Erro de banco de dados ao atualizar produto ID {produto.IdProduto}", ex);
+                throw new ApplicationException($"Erro ao atualizar produto: {ex.Message}", ex);
+            }
+            catch (InvalidOperationException)
+            {
+                throw; // Re-lança a exceção de produto não encontrado
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Erro inesperado ao atualizar produto ID {produto.IdProduto}", ex);
+                throw new ApplicationException($"Erro inesperado: {ex.Message}", ex);
             }
         }
+
         public void DeletarProduto(Produto produto)
         {
-            string query = "DELETE FROM produto WHERE id_produto = @id_produto";
+            const string query = "DELETE FROM produto WHERE id_produto = @id_produto";
+            
+            Logger.LogInfo($"Iniciando deleção do produto ID: {produto.IdProduto}");
+
             try
             {
                 using (var conn = new NpgsqlConnection(AppSettings.ConnectionString))
                 {
                     conn.Open();
+                    Logger.LogInfo("Conexão com banco de dados estabelecida");
 
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("id_produto", produto.IdProduto);
+                        cmd.Parameters.Add(new NpgsqlParameter("id_produto", NpgsqlTypes.NpgsqlDbType.Integer) { Value = produto.IdProduto });
 
                         int linhasAfetadas = cmd.ExecuteNonQuery();
 
                         if (linhasAfetadas > 0)
                         {
-                            Console.WriteLine("Produto deletado com sucesso.");
+                            Logger.LogInfo($"Produto ID {produto.IdProduto} deletado com sucesso");
                         }
                         else
                         {
-                            Console.WriteLine("Produto não encontrado.");
+                            Logger.LogWarning($"Produto com ID {produto.IdProduto} não foi encontrado para deleção");
+                            throw new InvalidOperationException($"Produto com ID {produto.IdProduto} não encontrado");
                         }
                     }
                 }
             }
             catch (NpgsqlException ex)
             {
-                Console.WriteLine($"Erro ao deletar produto: {ex.Message}");
-                throw;
+                Logger.LogError($"Erro de banco de dados ao deletar produto ID {produto.IdProduto}", ex);
+                throw new ApplicationException($"Erro ao deletar produto: {ex.Message}", ex);
+            }
+            catch (InvalidOperationException)
+            {
+                throw; // Re-lança a exceção de produto não encontrado
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Erro inesperado ao deletar produto ID {produto.IdProduto}", ex);
+                throw new ApplicationException($"Erro inesperado: {ex.Message}", ex);
             }
         }
-  
-        List<Produto> IProdutoDao.ListarProdutos()
+
+        public List<Produto> ListarProdutos()
         {
             var produtos = new List<Produto>();
-            string query = "SELECT id_produto, nome, preco, quantidade FROM produto";
+            const string query = "SELECT id_produto, nome, preco, quantidade FROM produto ORDER BY nome";
+            
+            Logger.LogInfo("Iniciando listagem de produtos");
 
             try
             {
                 using (var conn = new NpgsqlConnection(AppSettings.ConnectionString))
                 {
                     conn.Open();
+                    Logger.LogInfo("Conexão com banco de dados estabelecida");
 
                     using (var cmd = new NpgsqlCommand(query, conn))
                     using (var reader = cmd.ExecuteReader())
@@ -123,24 +171,30 @@ namespace Fluxo.Model
                         {
                             var produto = new Produto()
                             {
-                                IdProduto = reader.GetInt32(0),
-                                Nome = reader.GetString(1),
-                                Preco= reader.GetDecimal(2),
-                                Quantidade = reader.GetInt32(3),
+                                IdProduto = reader.GetInt32("id_produto"),
+                                Nome = reader.GetString("nome"),
+                                Preco = reader.GetDecimal("preco"),
+                                Quantidade = reader.GetInt32("quantidade")
                             };
 
                             produtos.Add(produto);
-
                         }
-                       Console.WriteLine("Produtos listados com sucesso.");
+                        
+                        Logger.LogInfo($"Listagem concluída: {produtos.Count} produtos encontrados");
                     }
                 }
             }
             catch (NpgsqlException ex)
             {
-                Console.WriteLine($"Erro ao listar produtos: {ex.Message}");
-                throw;
+                Logger.LogError("Erro de banco de dados ao listar produtos", ex);
+                throw new ApplicationException($"Erro ao listar produtos: {ex.Message}", ex);
             }
+            catch (Exception ex)
+            {
+                Logger.LogError("Erro inesperado ao listar produtos", ex);
+                throw new ApplicationException($"Erro inesperado: {ex.Message}", ex);
+            }
+
             return produtos;
         }
     }
